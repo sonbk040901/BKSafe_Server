@@ -1,0 +1,46 @@
+{
+  "name": "bksafe",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon --experimental-specifier-resolution=node server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --project ./tsconfig.json",
+    "lint": "eslint src --ext .ts"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/out/**"
+    ]
+  },
+  "_moduleAliases": {
+    "@models": "./models",
+    "@middlewares": "./middlewares",
+    "@controllers": "./controllers",
+    "@routes": "./routes",
+    "@services": "./services"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/morgan": "^1.9.4",
+    "@types/node": "^18.15.10",
+    "@types/validator": "^13.7.15",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
+    "typescript": "*"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.1.0",
+    "validator": "^13.9.0"
+  }
+}
