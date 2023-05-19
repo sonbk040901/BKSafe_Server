@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "nodemon --experimental-specifier-resolution=node server.ts",
+    "start": "nodemon server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --project ./tsconfig.json",
     "lint": "eslint src --ext .ts"
@@ -26,6 +26,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/morgan": "^1.9.4",
     "@types/node": "^18.15.10",
     "@types/validator": "^13.7.15",
