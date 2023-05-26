@@ -1,6 +1,5 @@
 import { Model, Schema, model, Document, Types } from "mongoose";
 import jwt from "jsonwebtoken";
-import vld from "validator";
 import bcrypt from "bcrypt";
 interface UserObject {
   username: string;
@@ -31,22 +30,6 @@ const schema = new Schema<IUser, UserModel, IUserMethods>(
     //implement model properties here
     username: {
       type: String,
-      // validate: [
-      //   {
-      //     validator: (v: string) => {
-      //       return /^[a-zA-Z0-9]+$/.test(v);
-      //     },
-      //     message: "Username is not valid",
-      //     type: "not valid",
-      //   },
-      //   {
-      //     validator: (v: string) => {
-      //       return v.length >= 6 && v.length <= 32;
-      //     },
-      //     message: "Username must be between 6 and 32 characters",
-      //     type: "not valid",
-      //   },
-      // ],
       required: true,
     },
     fullname: { type: String, required: true },
@@ -77,8 +60,9 @@ schema.methods.genToken = async function (
   this: UserDocument,
   expiresIn?: string
 ) {
-  const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY as string;
-  expiresIn = expiresIn ?? (process.env.JWT_EXPIRES_IN as string);
+  const AUTH_SECRET_KEY = <string>process.env.AUTH_SECRET_KEY;
+  const JWT_EXPIRES_IN = <string>process.env.JWT_EXPIRES_IN;
+  expiresIn = expiresIn ?? JWT_EXPIRES_IN;
   const token = jwt.sign({ id: this._id }, AUTH_SECRET_KEY, {
     expiresIn,
     // algorithm: "RS256",
@@ -86,13 +70,13 @@ schema.methods.genToken = async function (
   return token;
 };
 schema.methods.saveWithHashedPassword = async function (this: UserDocument) {
-  const SALT = process.env.BCRYPT_SALT as string;
-  const salt = await bcrypt.genSalt(parseInt(SALT));
-  this.password = await bcrypt.hash(this.password, salt);
+  const SALT_ROUNDS = <string>process.env.BCRYPT_SALT_ROUNDS;
+  const SALT = await bcrypt.genSalt(parseInt(SALT_ROUNDS));
+  this.password = await bcrypt.hash(this.password, SALT);
   await this.save();
 };
 schema.methods.toJson = function (this: UserDocument) {
-  const user = this.toObject();
+  const user = this.toJSON();
   const { password, _id: id, ...rest } = user;
   return { ...rest, id };
 };

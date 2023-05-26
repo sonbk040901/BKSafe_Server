@@ -1,23 +1,41 @@
-import { Request, Response } from "express";
-import { Req } from "../types";
+import { ControllerType, RequestWithPayload } from "../types";
 import userService from "../services/User.service";
-import createD from "../utils/createResD";
-const meController = {
-  async getMe(req: Req, res: Response) {
+import { UserDocument } from "../models/User.model";
+type Methods = "getMe" | "updateMe" | "updatePassword";
+const meController: ControllerType<Methods, RequestWithPayload> = {
+  getMe: async (req, res, next) => {
     try {
-      const user = await userService.findById(req.user?.id as string);
+      const user = <UserDocument>req.payload?.user;
       const data = user.toJson();
-      res.json(createD(true, data));
-    } catch (error: any) {
-      res.status(400).json(createD(false, error.message));
+      res.json({ data });
+    } catch (error) {
+      next(error);
     }
   },
-  async updateMe(req: Req, res: Response) {
+  updateMe: async (req, res, next) => {
     try {
-      await userService.update(req.user?.id as string, req.body);
-      res.json(createD(true, "Update successfully"));
-    } catch (error: any) {
-      res.status(400).json(createD(false, error.message));
+      const id = <string>req.payload?.id;
+      const update = req.body;
+      const user = await userService.update(id, update);
+      const data = user.toJson();
+      res.json({ message: "Update successfully", data });
+    } catch (error) {
+      next(error);
+    }
+  },
+  updatePassword: async (req, res, next) => {
+    try {
+      const id = <string>req.payload?.id;
+      const { oldPassword, newPassword } = req.body;
+      const user = await userService.updatePassword(
+        id,
+        oldPassword,
+        newPassword
+      );
+      const data = user.toJson();
+      res.json({ message: "Update successfully", data });
+    } catch (error) {
+      next(error);
     }
   },
 };

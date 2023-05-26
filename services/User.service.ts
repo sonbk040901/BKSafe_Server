@@ -1,66 +1,56 @@
 import User, { IUser, UserDocument } from "../models/User.model";
-import { Error } from "mongoose";
 const userService = {
   async login({ email, password }: { email: string; password: string }) {
-    try {
-      const user = await User.findOne({ email });
-      if (!user) {
-        throw new Error("Email not found");
-      }
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
-        throw new Error("Password is incorrect");
-      }
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const user = await User.findOne({ email });
+    if (!user) throw "Email not found";
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) throw "Password is incorrect";
+    return user;
   },
   async create(body: IUser) {
     // const { username, fullname, email, phone, avatar, role, password } = body;
-    try {
-      const user = new User(body);
-      await user.saveWithHashedPassword();
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const user = new User(body);
+    await user.saveWithHashedPassword();
+    return user;
   },
   async genToken(user: UserDocument, expiresIn?: string) {
-    try {
-      const token = await user.genToken(expiresIn);
-      return token;
-    } catch (error) {
-      throw error;
-    }
+    const token = await user.genToken(expiresIn);
+    return token;
   },
   async findById(id: string) {
-    try {
-      const user = await User.findById(id);
-      if (!user) {
-        throw new Error("User not found");
-      }
-      return user;
-    } catch (error) {
-      throw error;
+    const user = await User.findById(id);
+    if (!user) {
+      throw "User not found";
     }
+    return user;
   },
-  async update(id: string, body: IUser) {
-    try {
-      const result = await User.updateOne({ _id: id }, body);
-      if (result.matchedCount === 0) {
-        throw new Error("User not found");
-      }
-      return;
-    } catch (error) {
-      throw error;
-    }
+  async update(id: string, update: IUser) {
+    const { fullname, username, avatar } = update;
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      {
+        fullname,
+        username,
+        avatar,
+      },
+      { new: true }
+    );
+    if (!user) throw "User not found";
+    return user;
+  },
+  async updatePassword(id: string, oldPassword: string, newPassword: string) {
+    if (oldPassword === newPassword) throw "New password must be different";
+    const user = await User.findById(id);
+    if (!user) throw "User not found";
+    const isMatch = await user.comparePassword(oldPassword);
+    if (!isMatch) throw "Old password is incorrect";
+    user.password = newPassword;
+    await user.saveWithHashedPassword();
+    return user;
   },
   async checkTakenInfo(info: { email: string; phone: string }) {
-    try {
-      const isTakenInfo = await User.isTakenInfo(info);
-      return isTakenInfo;
-    } catch (error) {}
+    const isTakenInfo = await User.isTakenInfo(info);
+    return isTakenInfo;
   },
 };
 export default userService;

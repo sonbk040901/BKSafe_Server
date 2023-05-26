@@ -1,21 +1,28 @@
-import { NextFunction, Request, Response } from "express";
-import { Req } from "../types";
+import userService from "../services/User.service";
+import { MiddlewareType, RequestWithPayload } from "../types";
 import jwt from "jsonwebtoken";
-
-const authMiddleware = {
-  async verifyToken(req: Req, res: Response, next: NextFunction) {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Token not found" });
-    }
+type Methods = "verifyToken" | "verifyUser";
+const authMiddleware: MiddlewareType<Methods, RequestWithPayload> = {
+  verifyToken: async (req, res, next) => {
     try {
-      const decoded = jwt.verify(token, process.env.AUTH_SECRET_KEY as string);
-      req.user = decoded as { id: string };
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) throw new Error("Token is required");
+      const SECRET_KEY = <string>process.env.AUTH_SECRET_KEY;
+      const decoded = jwt.verify(token, SECRET_KEY);
+      req.payload = <Record<string, any>>decoded;
       next();
-    } catch (error) {
-      res.status(401).json({ success: false, message: "Token is invalid" });
+    } catch (error: any) {
+      res.status(401).json({ message: error.message, type: "Unauthorized" });
+    }
+  },
+  verifyUser: async (req, res, next) => {
+    try {
+      const id = <string>req.payload?.id;
+      const user = await userService.findById(id);
+      req.payload!.user = user;
+      next();
+    } catch (error: any) {
+      res.status(401).json({ message: error.message, type: "Unauthorized" });
     }
   },
 };
