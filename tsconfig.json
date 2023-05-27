@@ -21,6 +21,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
+    // "typeRoots": ["./globals.d.ts", "./node_modules/@types"],
+    // "types": ["node", "express"],
     // "declaration": true
     // "sourceMap": true,
     "baseUrl": "."
