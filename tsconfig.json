@@ -25,14 +25,14 @@
     // "types": ["node", "express"],
     // "declaration": true
     // "sourceMap": true,
-    "baseUrl": "."
-    // "paths": {
-    //   "@models": ["./models"],
-    //   "@middlewares": ["./middlewares"],
-    //   "@controllers": ["./controllers"],
-    //   "@routes": ["./routes"],
-    //   "@services": ["./services"]
-    // }
+    "baseUrl": ".",
+    "paths": {
+      "@models": ["./models"],
+      "@middlewares": ["./middlewares"],
+      "@controllers": ["./controllers"],
+      "@routes": ["./routes"],
+      "@services": ["./services"]
+    }
   },
   "exclude": ["node_modules", "build"],
   "include": ["**/*.ts"],

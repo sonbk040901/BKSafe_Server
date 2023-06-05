@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import initServer from "./initServer";
 import initConnect from "./services/db";
+import "module-alias/register";
 import "./custom";
 import route from "./routes";
 dotenv.config();

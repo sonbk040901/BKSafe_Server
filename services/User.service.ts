@@ -9,6 +9,8 @@ const userService = {
   },
   async create(body: IUser) {
     // const { username, fullname, email, phone, avatar, role, password } = body;
+    const isTakenInfo = await userService.checkTakenInfo(body);
+    if (isTakenInfo) throw "Email or phone is taken";
     const user = new User(body);
     await user.saveWithHashedPassword();
     return user;

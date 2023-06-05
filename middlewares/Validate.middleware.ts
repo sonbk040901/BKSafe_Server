@@ -15,10 +15,11 @@ const validate = (validations: ValidationChain[]): HandlerType => {
       return next();
     }
     // if there are errors, return the errors
+    const error = errors.array()[0];
     res.status(400).json({
       type: "Validation",
-      message: "Validation error",
-      errors: errors.array(),
+      message: error.msg,
+      error: errors.array()[0],
     });
   };
 };

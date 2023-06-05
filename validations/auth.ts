@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 export const login = () => [
   body("email", "Email is required").notEmpty(),
-  body("email").isEmail(),
+  body("email").isEmail().withMessage("Email is invalid"),
   body("password", "Password is required").notEmpty(),
   body("password", "Password cant contains white space").not().contains(" "),
   body("password", "Password's length must between 6 and 32").isLength({
@@ -28,7 +28,7 @@ export const signup = () => [
   body("email").isEmail(),
   body("fullname", "Fullname is required").trim().notEmpty(),
   body("phone", "Phone is required").notEmpty(),
-  body("phone").isMobilePhone("vi-VN"),
+  body("phone", "Phone number is invalid").isMobilePhone("vi-VN"),
   body("role", "Role is invalid, must be in [admin, user, driver]")
     .default("user")
     .isIn(["admin", "user", "driver"]),

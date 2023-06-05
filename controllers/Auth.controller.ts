@@ -15,8 +15,6 @@ const authController: ControllerType<Methods> = {
   },
   async signup(req, res, next) {
     try {
-      const isTakenInfo = await userService.checkTakenInfo(req.body);
-      if (isTakenInfo) throw "Email or phone is taken";
       const user = await userService.create(req.body);
       const { password, ...data } = user.toObject();
       res.status(201).json({ data });

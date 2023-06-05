@@ -19,3 +19,13 @@ export type HandlerType<R = Request> = (
   res: Response,
   next: NextFunction
 ) => unknown;
+
+type HttpErrorType = "Validation" | "Unauthorized" | "Internal server";
+export class HttpError {
+  constructor(
+    public statusCode: number,
+    public message: string,
+    public type: HttpErrorType,
+    public error: any
+  ) {}
+}
