@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
+import { MONGO_URI } from "../constants";
 export default async function initConnect() {
-  const MONGO_URI = <string>process.env.MONGO_URI;
   try {
     console.load("Connecting to database...");
     const connection = await mongoose.connect(MONGO_URI);

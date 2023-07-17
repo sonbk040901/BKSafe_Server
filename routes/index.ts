@@ -1,12 +1,17 @@
-import { Express } from "express";
+import { Express, Router } from "express";
 import authRoute from "./auth.route";
 import meRoute from "./me.route";
+import mapRoute from "./map.route";
+import requestRoute from "./request.route";
 import errorHandlerMiddleware from "../middlewares/ErrorHandler.middleware";
 
 export default function initRoutes(app: Express) {
-  app.use("/api/auth", authRoute);
-  app.use("/api/me", meRoute);
-  app.use(async (req, res, next) => {
+  const apiRouter = Router();
+  apiRouter.use("/auth", authRoute);
+  apiRouter.use("/me", meRoute);
+  apiRouter.use("/map", mapRoute);
+  apiRouter.use("/request", requestRoute);
+  apiRouter.use(async (req, res, next) => {
     res.status(403).send(
       `<p id="err" style="transition: all .5s">
         No route for path 
@@ -25,5 +30,6 @@ export default function initRoutes(app: Express) {
       `
     );
   });
+  app.use("/api", apiRouter);
   app.use(errorHandlerMiddleware);
 }

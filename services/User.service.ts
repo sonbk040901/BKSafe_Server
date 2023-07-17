@@ -1,4 +1,5 @@
-import User, { IUser, UserDocument } from "../models/User.model";
+import { User } from "../models";
+import type { IUser, UserDocument } from "../models";
 const userService = {
   async login({ email, password }: { email: string; password: string }) {
     const user = await User.findOne({ email });
@@ -35,7 +36,7 @@ const userService = {
         username,
         avatar,
       },
-      { new: true }
+      { new: true },
     );
     if (!user) throw "User not found";
     return user;

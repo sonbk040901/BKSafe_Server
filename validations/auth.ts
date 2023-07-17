@@ -32,4 +32,6 @@ export const signup = () => [
   body("role", "Role is invalid, must be in [admin, user, driver]")
     .default("user")
     .isIn(["admin", "user", "driver"]),
+  body("birthday", "Birthday is invalid").optional().isDate(),
+  body("address", "Address is invalid").optional().trim().notEmpty(),
 ];

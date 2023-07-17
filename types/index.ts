@@ -18,7 +18,7 @@ export type HandlerType<R = Request> = (
   req: R,
   res: Response,
   next: NextFunction
-) => unknown;
+) => Promise<unknown>;
 
 type HttpErrorType = "Validation" | "Unauthorized" | "Internal server";
 export class HttpError {

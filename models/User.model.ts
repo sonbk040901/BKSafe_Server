@@ -1,16 +1,18 @@
 import { Model, Schema, model, Document, Types } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-interface UserObject {
+import {
+  AUTH_SECRET_KEY,
+  BCRYPT_SALT_ROUNDS,
+  JWT_EXPIRES_IN,
+} from "../constants";
+export interface IUser {
   username: string;
   fullname: string;
   email: string;
   phone: string;
   avatar?: string;
-  role?: "admin" | "user" | "driver";
   isActivated: boolean;
-}
-export interface IUser extends UserObject {
   //declare model properties here
   password: string;
 }
@@ -19,7 +21,7 @@ export interface IUserMethods {
   comparePassword(password: string): Promise<boolean>;
   genToken(expiresIn?: string): Promise<string>;
   saveWithHashedPassword(): Promise<void>;
-  toJson(): UserObject & { id: Types.ObjectId };
+  toJson(): Omit<IUser, "password"> & { id: Types.ObjectId };
 }
 export interface UserModel extends Model<IUser, {}, IUserMethods> {
   //declare static method here
@@ -35,33 +37,27 @@ const schema = new Schema<IUser, UserModel, IUserMethods>(
     fullname: { type: String, required: true },
     phone: { type: String, required: true, unique: true },
     avatar: { type: String },
-    role: {
-      type: String,
-      enum: ["admin", "user", "driver"],
-      default: "user",
-    },
     isActivated: { type: Boolean, default: false },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
   },
   {
     timestamps: true,
-  }
+    versionKey: false,
+  },
 );
 
 //implement instance method here
 schema.methods.comparePassword = async function (
   this: UserDocument,
-  password: string
+  password: string,
 ) {
   return await bcrypt.compare(password, this.password);
 };
 schema.methods.genToken = async function (
   this: UserDocument,
-  expiresIn?: string
+  expiresIn?: string,
 ) {
-  const AUTH_SECRET_KEY = <string>process.env.AUTH_SECRET_KEY;
-  const JWT_EXPIRES_IN = <string>process.env.JWT_EXPIRES_IN;
   expiresIn = expiresIn ?? JWT_EXPIRES_IN;
   const token = jwt.sign({ id: this._id }, AUTH_SECRET_KEY, {
     expiresIn,
@@ -70,8 +66,7 @@ schema.methods.genToken = async function (
   return token;
 };
 schema.methods.saveWithHashedPassword = async function (this: UserDocument) {
-  const SALT_ROUNDS = <string>process.env.BCRYPT_SALT_ROUNDS;
-  const SALT = await bcrypt.genSalt(parseInt(SALT_ROUNDS));
+  const SALT = await bcrypt.genSalt(parseInt(BCRYPT_SALT_ROUNDS));
   this.password = await bcrypt.hash(this.password, SALT);
   await this.save();
 };
