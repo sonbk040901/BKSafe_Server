@@ -8,17 +8,31 @@ interface Location {
   address: string;
   latLng: LatLng;
 }
-type Status = "pending" | "accepted" | "rejected" | "completed";
+type Status =
+  | "pending"
+  | "accepted"
+  | "rejected"
+  | "completed"
+  | "canceled"
+  | "driving";
 export interface IRequest {
   //declare model properties here
   //example: `name: string`
   user: Types.ObjectId;
-  currentLocation: Location;
+  currentLocation?: Location;
   startLocation: Location;
   endLocation?: Location;
-  suggestedDriver: Types.ObjectId[];
+  suggestedDriver?: Types.ObjectId[];
   driver?: Types.ObjectId;
   status: Status;
+  price?: number;
+  rating?: number;
+  locations?: {
+    address: string;
+    longitude: number;
+    latitude: number;
+    type: "stop" | "pickup" | "dropoff";
+  }[];
 }
 interface IRequestMethods {
   //declare instance method here
@@ -33,17 +47,17 @@ const schema = new Schema<IRequest, RequestModel, IRequestMethods>(
     //implement model properties here
     user: Types.ObjectId,
     currentLocation: {
-      address: { type: String, required: true },
+      address: { type: String },
       latLng: {
-        lat: { type: Number, required: true },
-        lng: { type: Number, required: true },
+        lat: { type: Number },
+        lng: { type: Number },
       },
     },
     startLocation: {
-      address: { type: String, required: true },
+      address: { type: String },
       latLng: {
-        lat: { type: Number, required: true },
-        lng: { type: Number, required: true },
+        lat: { type: Number },
+        lng: { type: Number },
       },
     },
     endLocation: {
@@ -54,12 +68,29 @@ const schema = new Schema<IRequest, RequestModel, IRequestMethods>(
       },
     },
     suggestedDriver: [{ type: Types.ObjectId }],
-    driver: { type: Types.ObjectId },
+    driver: Types.ObjectId,
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected", "completed"],
+      enum: [
+        "pending",
+        "accepted",
+        "rejected",
+        "completed",
+        "canceled",
+        "driving",
+      ],
       default: "pending",
     },
+    price: Number,
+    rating: Number,
+    locations: [
+      {
+        address: String,
+        longitude: Number,
+        latitude: Number,
+        type: { type: String, enum: ["stop", "pickup", "dropoff"] },
+      },
+    ],
   },
   {
     timestamps: true,

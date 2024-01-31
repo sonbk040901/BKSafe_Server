@@ -2,6 +2,7 @@ import { ControllerType } from "../types";
 import { errorThrowableWrappers } from "./errorThrowableWrapper";
 import MapService from "../services/GoogleMap.service";
 import DriverService from "../services/Driver.service";
+import { DrivingCostUtil } from "../utils/drivingCost";
 //declare controller methods here
 // const latLngRank = {
 //   lat: { min: 20.9654, max: 21.0438 },
@@ -11,7 +12,7 @@ import DriverService from "../services/Driver.service";
 //21.229870, 105.904773
 //20.712072, 106.009428
 //20.624008, 105.668962
-type Methods = "findDriver";
+type Methods = "findDriver" | "calculateDrivingCost";
 const MapController: ControllerType<Methods> = {
   findDriver: async (req, res) => {
     const { lat, lng, radius: radiusq } = req.query;
@@ -23,7 +24,7 @@ const MapController: ControllerType<Methods> = {
         // const origin = `${lat},${lng}`;
         // const destination = `${location.lat},${location.lng}`;
         const origin = { lat: Number(lat), lng: Number(lng) };
-        const destination = { lat: location.lat, lng: location.lng }; 
+        const destination = { lat: location.lat, lng: location.lng };
         const distance = await MapService.getDistance(origin, destination);
         return { distance: distance.distance, ...location };
       }),
@@ -34,6 +35,14 @@ const MapController: ControllerType<Methods> = {
       .slice(0, 5);
 
     res.json({ data });
+  },
+  calculateDrivingCost: async (req, res) => {
+    const { distance, positions } = req.body;
+    const cost = DrivingCostUtil.calculateDrivingCost(
+      distance,
+      positions.length,
+    );
+    res.json({ data: cost });
   },
 };
 export default errorThrowableWrappers(MapController);

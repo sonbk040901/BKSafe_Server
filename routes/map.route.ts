@@ -6,4 +6,5 @@ const router = Router();
 router
   .route("/drivers")
   .get(validate(mapValidation.findDriver()), MapController.findDriver);
+router.route("/driving-cost").all(MapController.calculateDrivingCost);
 export default router;
