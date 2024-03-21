@@ -15,3 +15,4 @@ export const getDistance = async (origin: Location, destination: Location) => {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c; // in metres
 };
+//Trả về góc (tính bằng radian) từ trục X tới một điểm.
